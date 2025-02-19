@@ -8,7 +8,7 @@ let fetch;
 })();
 
 const PORT = 3000;
-const API_KEY = 'c722b057-0c21-44f5-bfb3-eaf464e42e20';
+const API_KEY = '123';
 const API_URL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
 
 const MIME_TYPES = {
