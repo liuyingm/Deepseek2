@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const config = require('./config');
 let fetch;
 (async () => {
     const { default: f } = await import('node-fetch');
@@ -8,8 +9,8 @@ let fetch;
 })();
 
 const PORT = 3000;
-const API_KEY = 'c722b057-0c21-44f5-bfb3-eaf464e42e20';
-const API_URL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+const API_KEY = config.API_KEY;
+const API_URL = config.API_URL;
 
 const MIME_TYPES = {
     '.html': 'text/html',
