@@ -3,181 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI智能对话助手</title>
+    <title>Deepseek R1 满血版（开发者Trae）</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
+        @keyframes titleGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
         :root {
-            --primary-color: #2e8b57;
-            --primary-dark: #1f6e43;
-            --gold: #ffd700;
-            --light-bg: #f0f7f4;
-            --border-color: #a8d5ba;
+            --primary-color: #3B82F6;
+            --primary-dark: #2563EB;
+            --secondary-color: #10B981;
+            --light-bg: #F8FAFC;
+            --border-color: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
         body {
-            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 24px;
             background-color: var(--light-bg);
-            color: #333;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
-            gap: 24px;
+            gap: 32px;
         }
         .chat-container {
             flex: 1;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(196, 30, 58, 0.1);
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
             display: flex;
             flex-direction: column;
             height: 85vh;
-            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .chat-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
         }
         .themes {
-            width: 220px;
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(196, 30, 58, 0.1);
+            width: 280px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
             display: flex;
             flex-direction: column;
-            border: 1px solid var(--border-color);
+            gap: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .themes:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
         }
         .themes h3 {
-            color: var(--chinese-red);
-            margin-bottom: 16px;
-            text-align: center;
-            font-size: 1.2em;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 24px;
+            letter-spacing: -0.5px;
         }
-        .history-controls {
-            margin-top: 24px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border-color);
+        .theme-buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        .history-controls button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 8px;
-            border: none;
-            border-radius: 8px;
-            background-color: var(--primary-color);
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-        }
-        .history-controls button:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-        .theme-button {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 12px;
+        .theme-button, #clear-history, #export-history {
+            background: var(--light-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: white;
-            color: var(--primary-color);
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            color: var(--text-primary);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 500;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+            letter-spacing: -0.2px;
+            flex: 1;
         }
-        .theme-button:hover {
-            background-color: var(--primary-color);
+        .theme-button:hover, #clear-history:hover, #export-history:hover {
+            background: var(--border-color);
+            transform: translateX(4px);
+        }
+        .themes-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        #export-history, #clear-history {
+            flex: 1;
+        }
+        .theme-button.active {
+            background: var(--primary-color);
             color: white;
-            transform: translateY(-1px);
+            border-color: var(--primary-dark);
+            font-weight: 600;
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
         }
-        .chat-messages {
+        #chat-messages {
             flex: 1;
             overflow-y: auto;
             padding: 24px;
-            background: linear-gradient(to bottom, #fff9f9, white);
-        }
-        .message {
-            margin-bottom: 20px;
-            padding: 12px;
-            border-radius: 12px;
-            max-width: 80%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .user-message {
-            background-color: var(--primary-color);
-            color: white;
-            margin-left: auto;
-            border-bottom-right-radius: 4px;
-        }
-        .bot-message {
-            background-color: white;
-            color: #333;
-            border: 1px solid var(--border-color);
-            border-bottom-left-radius: 4px;
-        }
-        .reasoning {
-            font-size: 0.95em;
-            color: #666;
-            margin-top: 8px;
-            padding: 8px;
-            background-color: rgba(255,255,255,0.8);
-            border-radius: 8px;
-            border-left: 3px solid var(--primary-color);
         }
         .input-container {
-            padding: 24px;
             border-top: 1px solid var(--border-color);
+            padding: 20px 28px;
             display: flex;
-            gap: 12px;
-            background-color: white;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
+            gap: 18px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
         }
         #user-input {
             flex: 1;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border: none;
+            background: var(--light-bg);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 15px;
             resize: none;
+            height: 24px;
+            line-height: 24px;
             font-family: inherit;
-            font-size: 1em;
-            transition: border-color 0.3s ease;
+            transition: all 0.2s ease;
         }
         #user-input:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(46, 139, 87, 0.1);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         #send-button {
-            padding: 12px 24px;
-            background-color: var(--primary-color);
+            background: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            transition: all 0.2s ease;
         }
         #send-button:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-1px);
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        .message {
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeIn 0.3s ease forwards;
+            padding: 16px 40px 16px 20px;
+            border-radius: 12px;
+            max-width: 85%;
+            position: relative;
+            font-size: 15px;
+            line-height: 1.6;
+            letter-spacing: 0.3px;
+        }
+        .copy-button {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            z-index: 1;
+        }
+        .message:hover .copy-button {
+            opacity: 1;
+        }
+        .copy-button:hover {
+            transform: translateY(-50%) scale(1.05);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .copy-button.copied {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .user-message {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 16px;
+            border-bottom-right-radius: 4px;
+            align-self: flex-end;
+            max-width: 80%;
+            margin-left: auto;
+        }
+        .bot-message {
+            background: var(--light-bg);
+            padding: 12px 16px;
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+            max-width: 80%;
         }
         .loading {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #666;
-            font-size: 0.9em;
+            color: var(--text-secondary);
+            font-size: 14px;
         }
         .dots {
-            display: inline-block;
             animation: dots 1.5s infinite;
         }
         @keyframes dots {
@@ -186,29 +251,118 @@
             60% { content: '...'; }
             80%, 100% { content: ''; }
         }
+        /* Markdown样式 */
+        .bot-message h1, .bot-message h2, .bot-message h3 {
+            color: var(--text-primary);
+            margin: 16px 0 8px;
+            font-weight: 600;
+        }
+        .bot-message code {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: "SF Mono", monospace;
+            font-size: 14px;
+        }
+        .bot-message pre code {
+            display: block;
+            padding: 16px;
+            overflow-x: auto;
+            line-height: 1.5;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 12px;
+        }
+        .bot-message ul, .bot-message ol {
+            padding-left: 24px;
+            margin: 12px 0;
+        }
+        .bot-message blockquote {
+            border-left: 4px solid var(--primary-color);
+            margin: 12px 0;
+            padding: 8px 16px;
+            color: var(--text-secondary);
+            background: rgba(0, 122, 255, 0.05);
+            border-radius: 4px;
+        }
+        .bot-message table {
+            border-collapse: collapse;
+            margin: 16px 0;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .bot-message th, .bot-message td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+        .bot-message th {
+            background: var(--light-bg);
+            font-weight: 600;
+        }
+        h1.page-title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin: 0 0 32px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% 200%;
+            animation: titleGradient 5s ease infinite;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #theme-switch-notice {
+            position: fixed;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        #theme-switch-notice.show {
+            top: 20px;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
+    <h1 class="page-title">Deepseek R1 满血版（开发者Trae）</h1>
     <div class="container">
         <div class="themes">
-            <h3>选择主题</h3>
-            <button class="theme-button" data-theme="solution">方案撰写</button>
-            <button class="theme-button" data-theme="tech">技术顾问</button>
-            <button class="theme-button" data-theme="xiaohongshu">小红书创作</button>
-            <button class="theme-button" data-theme="coach">发展教练</button>
-            <button class="theme-button" data-theme="story">故事叙述</button>
-            <div class="history-controls">
-                <button id="clear-history">清除历史记录</button>
+            <h3>对话主题</h3>
+            <div class="theme-buttons-container">
+                <button class="theme-button" data-theme="solution">方案撰写</button>
+                <button class="theme-button" data-theme="tech">技术顾问</button>
+                <button class="theme-button" data-theme="xiaohongshu">小红书创作</button>
+                <button class="theme-button" data-theme="coach">发展教练</button>
+                <button class="theme-button" data-theme="story">故事叙述</button>
+                <button class="theme-button" data-theme="research">科研协作</button>
+                <button class="theme-button" data-theme="translator">语言翻译</button>
+            </div>
+            <div class="themes-footer">
+                <button id="export-history"><i class="fas fa-download"></i> 导出</button>
+                <button id="clear-history"><i class="fas fa-broom"></i> 清除</button>
             </div>
         </div>
         <div class="chat-container">
-            <div class="chat-messages" id="chat-messages"></div>
+            <div id="chat-messages"></div>
             <div class="input-container">
-                <textarea id="user-input" placeholder="请输入您想要咨询的内容..." rows="2"></textarea>
+                <textarea id="user-input" placeholder="请输入您的问题..."></textarea>
                 <button id="send-button">发送</button>
             </div>
         </div>
     </div>
-    <script src="/client.js"></script>
+    <div id="theme-switch-notice"></div>
+    <script src="client.js"></script>
 </body>
 </html>
